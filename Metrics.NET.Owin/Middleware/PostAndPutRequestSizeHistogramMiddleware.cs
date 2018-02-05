@@ -10,18 +10,18 @@ namespace Metrics.Owin.Middleware
 
     public class PostAndPutRequestSizeHistogramMiddleware : MetricMiddleware
     {
-        private readonly Histogram histogram;
-        private AppFunc next;
+        private readonly Histogram _histogram;
+        private AppFunc _next;
 
         public PostAndPutRequestSizeHistogramMiddleware(MetricsContext context, string metricName, Regex[] ignorePatterns)
             : base(ignorePatterns)
         {
-            this.histogram = context.Histogram(metricName, Unit.Bytes);
+            _histogram = context.Histogram(metricName, Unit.Bytes);
         }
 
         public void Initialize(AppFunc next)
         {
-            this.next = next;
+            _next = next;
         }
 
         public async Task Invoke(IDictionary<string, object> environment)
@@ -35,12 +35,12 @@ namespace Metrics.Owin.Middleware
                     var headers = (IDictionary<string, string[]>)environment["owin.RequestHeaders"];
                     if (headers != null && headers.ContainsKey("Content-Length"))
                     {
-                        histogram.Update(long.Parse(headers["Content-Length"].First()));
+                        _histogram.Update(long.Parse(headers["Content-Length"].First()));
                     }
                 }
             }
 
-            await next(environment);
+            await _next(environment);
         }
     }
 }

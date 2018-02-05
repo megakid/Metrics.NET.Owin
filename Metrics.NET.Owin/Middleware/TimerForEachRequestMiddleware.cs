@@ -13,19 +13,19 @@ namespace Metrics.Owin.Middleware
     {
         private const string RequestStartTimeKey = "__Metrics.RequestStartTime__";
 
-        private readonly MetricsContext context;
+        private readonly MetricsContext _context;
 
-        private AppFunc next;
+        private AppFunc _next;
 
         public TimerForEachRequestMiddleware(MetricsContext context, Regex[] ignorePatterns)
             : base(ignorePatterns)
         {
-            this.context = context;
+            _context = context;
         }
 
         public void Initialize(AppFunc next)
         {
-            this.next = next;
+            _next = next;
         }
 
         public async Task Invoke(IDictionary<string, object> environment)
@@ -34,7 +34,7 @@ namespace Metrics.Owin.Middleware
             {
                 environment[RequestStartTimeKey] = Clock.Default.Nanoseconds;
 
-                await next(environment);
+                await _next(environment);
 
                 var httpResponseStatusCode = int.Parse(environment["owin.ResponseStatusCode"].ToString());
                 var metricName = environment["owin.RequestPath"].ToString();
@@ -51,13 +51,13 @@ namespace Metrics.Owin.Middleware
                 {
                     var startTime = (long)environment[RequestStartTimeKey];
                     var elapsed = Clock.Default.Nanoseconds - startTime;
-                    this.context.Timer(metricName, Unit.Requests)
+                    _context.Timer(metricName, Unit.Requests)
                         .Record(elapsed, TimeUnit.Nanoseconds);
                 }
             }
             else
             {
-                await next(environment);
+                await _next(environment);
             }
         }
     }

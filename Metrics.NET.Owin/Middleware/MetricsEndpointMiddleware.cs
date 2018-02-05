@@ -13,41 +13,41 @@ namespace Metrics.Owin.Middleware
 
     public class MetricsEndpointMiddleware
     {
-        private readonly string endpointPrefix;
-        private readonly OwinMetricsEndpointHandler endpointHandler;
-        private AppFunc next;
+        private readonly string _endpointPrefix;
+        private readonly OwinMetricsEndpointHandler _endpointHandler;
+        private AppFunc _next;
 
         public MetricsEndpointMiddleware(string endpointPrefix, MetricsEndpointReports endpointConfig)
         {
-            this.endpointPrefix = NormalizePrefix(endpointPrefix);
-            this.endpointHandler = new OwinMetricsEndpointHandler(endpointConfig.Endpoints);
+            _endpointPrefix = NormalizePrefix(endpointPrefix);
+            _endpointHandler = new OwinMetricsEndpointHandler(endpointConfig.Endpoints);
         }
 
         public void Initialize(AppFunc next)
         {
-            this.next = next;
+            _next = next;
         }
 
         public Task Invoke(IDictionary<string, object> environment)
         {
             var requestPath = environment["owin.RequestPath"] as string;
-            if (requestPath.StartsWith(this.endpointPrefix, StringComparison.OrdinalIgnoreCase))
+            if (requestPath.StartsWith(_endpointPrefix, StringComparison.OrdinalIgnoreCase))
             {
-                requestPath = requestPath.Substring(this.endpointPrefix.Length);
+                requestPath = requestPath.Substring(_endpointPrefix.Length);
 
                 if (requestPath == "/")
                 {
                     return GetFlotWebApp(environment);
                 }
 
-                var response = this.endpointHandler.Process(requestPath, environment);
+                var response = _endpointHandler.Process(requestPath, environment);
                 if (response != null)
                 {
                     return WriteResponse(response, environment);
                 }
             }
 
-            return this.next(environment);
+            return _next(environment);
         }
 
         private static string NormalizePrefix(string prefix)

@@ -9,22 +9,22 @@ namespace Metrics.Owin
     {
         public static readonly OwinMetricsConfig Disabled = new OwinMetricsConfig();
 
-        private readonly Action<object> middlewareRegistration;
-        private readonly MetricsContext context;
-        private readonly Func<HealthStatus> healthStatus;
+        private readonly Action<object> _middlewareRegistration;
+        private readonly MetricsContext _context;
+        private readonly Func<HealthStatus> _healthStatus;
 
-        private readonly bool isDisabled;
+        private readonly bool _isDisabled;
 
         public OwinMetricsConfig(Action<object> middlewareRegistration, MetricsContext context, Func<HealthStatus> healthStatus)
         {
-            this.middlewareRegistration = middlewareRegistration;
-            this.context = context;
-            this.healthStatus = healthStatus;
+            _middlewareRegistration = middlewareRegistration;
+            _context = context;
+            _healthStatus = healthStatus;
         }
 
         private OwinMetricsConfig()
         {
-            this.isDisabled = true;
+            _isDisabled = true;
         }
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace Metrics.Owin
         /// <returns>Chainable configuration object.</returns>
         public OwinMetricsConfig WithRequestMetricsConfig(Regex[] ignoreRequestPathPatterns = null, string owinContext = "Owin")
         {
-            if (this.isDisabled)
+            if (_isDisabled)
             {
                 return this;
             }
@@ -53,12 +53,12 @@ namespace Metrics.Owin
         public OwinMetricsConfig WithRequestMetricsConfig(Action<OwinRequestMetricsConfig> config,
             Regex[] ignoreRequestPathPatterns = null, string owinContext = "Owin")
         {
-            if (this.isDisabled)
+            if (_isDisabled)
             {
                 return this;
             }
 
-            OwinRequestMetricsConfig requestConfig = new OwinRequestMetricsConfig(this.middlewareRegistration, this.context.Context(owinContext), ignoreRequestPathPatterns);
+            OwinRequestMetricsConfig requestConfig = new OwinRequestMetricsConfig(_middlewareRegistration, _context.Context(owinContext), ignoreRequestPathPatterns);
             config(requestConfig);
             return this;
         }
@@ -69,7 +69,7 @@ namespace Metrics.Owin
         /// <returns>Chainable configuration object.</returns>
         public OwinMetricsConfig WithMetricsEndpoint()
         {
-            if (this.isDisabled)
+            if (_isDisabled)
             {
                 return this;
             }
@@ -86,15 +86,15 @@ namespace Metrics.Owin
         /// <returns>Chainable configuration object.</returns>
         public OwinMetricsConfig WithMetricsEndpoint(Action<MetricsEndpointReports> config, string endpointPrefix = "metrics")
         {
-            if (this.isDisabled)
+            if (_isDisabled)
             {
                 return this;
             }
 
-            var endpointConfig = new MetricsEndpointReports(this.context.DataProvider, this.healthStatus);
+            var endpointConfig = new MetricsEndpointReports(_context.DataProvider, _healthStatus);
             config(endpointConfig);
             var metricsEndpointMiddleware = new MetricsEndpointMiddleware(endpointPrefix, endpointConfig);
-            this.middlewareRegistration(metricsEndpointMiddleware);
+            _middlewareRegistration(metricsEndpointMiddleware);
             return this;
         }
     }

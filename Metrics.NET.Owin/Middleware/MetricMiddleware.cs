@@ -7,16 +7,16 @@ namespace Metrics.Owin.Middleware
 {
     public abstract class MetricMiddleware
     {
-        private readonly Regex[] ignorePatterns;
+        private readonly Regex[] _ignorePatterns;
 
         protected MetricMiddleware(Regex[] ignorePatterns)
         {
-            this.ignorePatterns = ignorePatterns;
+            _ignorePatterns = ignorePatterns;
         }
 
         protected bool PerformMetric(IDictionary<string, object> environment)
         {
-            if (ignorePatterns == null)
+            if (_ignorePatterns == null)
             {
                 return true;
             }
@@ -25,7 +25,7 @@ namespace Metrics.Owin.Middleware
 
             if (string.IsNullOrWhiteSpace(requestPath)) return false;
 
-            return !this.ignorePatterns.Any(ignorePattern => ignorePattern.IsMatch(requestPath.TrimStart('/')));
+            return !_ignorePatterns.Any(ignorePattern => ignorePattern.IsMatch(requestPath.TrimStart('/')));
         }
     }
 }

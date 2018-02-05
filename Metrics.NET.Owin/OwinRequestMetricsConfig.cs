@@ -6,15 +6,15 @@ namespace Metrics.Owin
 {
     public class OwinRequestMetricsConfig
     {
-        private readonly MetricsContext metricsContext;
-        private readonly Action<object> middlewareRegistration;
-        private readonly Regex[] ignoreRequestPathPatterns;
+        private readonly MetricsContext _metricsContext;
+        private readonly Action<object> _middlewareRegistration;
+        private readonly Regex[] _ignoreRequestPathPatterns;
 
         public OwinRequestMetricsConfig(Action<object> middlewareRegistration, MetricsContext metricsContext, Regex[] ignoreRequestPathPatterns)
         {
-            this.middlewareRegistration = middlewareRegistration;
-            this.metricsContext = metricsContext;
-            this.ignoreRequestPathPatterns = ignoreRequestPathPatterns;
+            _middlewareRegistration = middlewareRegistration;
+            _metricsContext = metricsContext;
+            _ignoreRequestPathPatterns = ignoreRequestPathPatterns;
         }
 
         /// <summary>
@@ -41,8 +41,8 @@ namespace Metrics.Owin
         /// <param name="metricName">Name of the metric.</param>
         public OwinRequestMetricsConfig WithRequestTimer(string metricName = "Requests")
         {
-            var metricsMiddleware = new RequestTimerMiddleware(this.metricsContext, metricName, this.ignoreRequestPathPatterns);
-            middlewareRegistration(metricsMiddleware);
+            var metricsMiddleware = new RequestTimerMiddleware(_metricsContext, metricName, _ignoreRequestPathPatterns);
+            _middlewareRegistration(metricsMiddleware);
             return this;
         }
 
@@ -52,8 +52,8 @@ namespace Metrics.Owin
         /// <param name="metricName">Name of the metric.</param>
         public OwinRequestMetricsConfig WithActiveRequestCounter(string metricName = "Active Requests")
         {
-            var metricsMiddleware = new ActiveRequestCounterMiddleware(this.metricsContext, metricName, this.ignoreRequestPathPatterns);
-            middlewareRegistration(metricsMiddleware);
+            var metricsMiddleware = new ActiveRequestCounterMiddleware(_metricsContext, metricName, _ignoreRequestPathPatterns);
+            _middlewareRegistration(metricsMiddleware);
             return this;
         }
 
@@ -63,8 +63,8 @@ namespace Metrics.Owin
         /// <param name="metricName">Name of the metric.</param>
         public OwinRequestMetricsConfig WithPostAndPutRequestSizeHistogram(string metricName = "Post & Put Request Size")
         {
-            var metricsMiddleware = new PostAndPutRequestSizeHistogramMiddleware(this.metricsContext, metricName, this.ignoreRequestPathPatterns);
-            middlewareRegistration(metricsMiddleware);
+            var metricsMiddleware = new PostAndPutRequestSizeHistogramMiddleware(_metricsContext, metricName, _ignoreRequestPathPatterns);
+            _middlewareRegistration(metricsMiddleware);
             return this;
         }
 
@@ -75,8 +75,8 @@ namespace Metrics.Owin
         /// </summary>
         public OwinRequestMetricsConfig WithTimerForEachRequest()
         {
-            var metricsMiddleware = new TimerForEachRequestMiddleware(this.metricsContext, this.ignoreRequestPathPatterns);
-            middlewareRegistration(metricsMiddleware);
+            var metricsMiddleware = new TimerForEachRequestMiddleware(_metricsContext, _ignoreRequestPathPatterns);
+            _middlewareRegistration(metricsMiddleware);
             return this;
         }
 
@@ -87,8 +87,8 @@ namespace Metrics.Owin
         /// <param name="metricName">Name of the metric.</param>
         public OwinRequestMetricsConfig WithErrorsMeter(string metricName = "Errors")
         {
-            var metricsMiddleware = new ErrorMeterMiddleware(this.metricsContext, metricName, this.ignoreRequestPathPatterns);
-            middlewareRegistration(metricsMiddleware);
+            var metricsMiddleware = new ErrorMeterMiddleware(_metricsContext, metricName, _ignoreRequestPathPatterns);
+            _middlewareRegistration(metricsMiddleware);
             return this;
         }
 
@@ -99,8 +99,8 @@ namespace Metrics.Owin
         /// <param name="metricName">Name of the metric.</param>
         public OwinRequestMetricsConfig WithHttpStatusCodeMeter(string metricName = "HttpStatusCodes")
         {
-            var metricsMiddleware = new HttpStatusCodeMeterMiddleware(this.metricsContext, metricName, this.ignoreRequestPathPatterns);
-            middlewareRegistration(metricsMiddleware);
+            var metricsMiddleware = new HttpStatusCodeMeterMiddleware(_metricsContext, metricName, _ignoreRequestPathPatterns);
+            _middlewareRegistration(metricsMiddleware);
             return this;
         }
     }

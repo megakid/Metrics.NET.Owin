@@ -9,13 +9,13 @@ namespace Metrics.NET.Owin.Tests.Utils
 {
     public class TestMetricsBuilder : MetricsBuilder
     {
-        private readonly Clock clock;
-        private readonly Scheduler scheduler;
+        private readonly Clock _clock;
+        private readonly Scheduler _scheduler;
 
         public TestMetricsBuilder(Clock clock, Scheduler scheduler)
         {
-            this.clock = clock;
-            this.scheduler = scheduler;
+            _clock = clock;
+            _scheduler = scheduler;
         }
 
         public MetricValueProvider<double> BuildPerformanceCounter(string name, Unit unit, string counterCategory, string counterName, string counterInstance)
@@ -35,7 +35,7 @@ namespace Metrics.NET.Owin.Tests.Utils
 
         public MeterImplementation BuildMeter(string name, Unit unit, TimeUnit rateUnit)
         {
-            return new MeterMetric(this.clock, this.scheduler);
+            return new MeterMetric(_clock, _scheduler);
         }
 
         public HistogramImplementation BuildHistogram(string name, Unit unit, SamplingType samplingType)
@@ -50,17 +50,17 @@ namespace Metrics.NET.Owin.Tests.Utils
 
         public TimerImplementation BuildTimer(string name, Unit unit, TimeUnit rateUnit, TimeUnit durationUnit, SamplingType samplingType)
         {
-            return new TimerMetric(new HistogramMetric(new UniformReservoir()), new MeterMetric(this.clock, this.scheduler), this.clock);
+            return new TimerMetric(new HistogramMetric(new UniformReservoir()), new MeterMetric(_clock, _scheduler), _clock);
         }
 
         public TimerImplementation BuildTimer(string name, Unit unit, TimeUnit rateUnit, TimeUnit durationUnit, HistogramImplementation histogram)
         {
-            return new TimerMetric(new HistogramMetric(new UniformReservoir()), new MeterMetric(this.clock, this.scheduler), this.clock);
+            return new TimerMetric(new HistogramMetric(new UniformReservoir()), new MeterMetric(_clock, _scheduler), _clock);
         }
 
         public TimerImplementation BuildTimer(string name, Unit unit, TimeUnit rateUnit, TimeUnit durationUnit, Reservoir reservoir)
         {
-            return new TimerMetric(new HistogramMetric(new UniformReservoir()), new MeterMetric(this.clock, this.scheduler), this.clock);
+            return new TimerMetric(new HistogramMetric(new UniformReservoir()), new MeterMetric(_clock, _scheduler), _clock);
         }
     }
 }

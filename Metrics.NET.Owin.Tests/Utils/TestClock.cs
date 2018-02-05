@@ -5,15 +5,15 @@ namespace Metrics.NET.Owin.Tests.Utils
 {
     public sealed class TestClock : Clock
     {
-        private long nanoseconds = 0;
+        private long _nanoseconds = 0;
 
-        public override long Nanoseconds { get { return this.nanoseconds; } }
+        public override long Nanoseconds { get { return _nanoseconds; } }
 
-        public override DateTime UTCDateTime { get { return new DateTime(this.nanoseconds / 100L, DateTimeKind.Utc); } }
+        public override DateTime UTCDateTime { get { return new DateTime(_nanoseconds / 100L, DateTimeKind.Utc); } }
 
         public void Advance(TimeUnit unit, long value)
         {
-            this.nanoseconds += unit.ToNanoseconds(value);
+            _nanoseconds += unit.ToNanoseconds(value);
             if (Advanced != null)
             {
                 Advanced(this, EventArgs.Empty);

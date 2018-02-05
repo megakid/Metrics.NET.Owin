@@ -10,36 +10,36 @@ namespace Metrics.Owin.Middleware
 
     public class ErrorMeterMiddleware : MetricMiddleware
     {
-        private readonly Meter errorMeter;
-        private AppFunc next;
+        private readonly Meter _errorMeter;
+        private AppFunc _next;
 
         public ErrorMeterMiddleware(MetricsContext context, string metricName, Regex[] ignorePatterns)
             : base(ignorePatterns)
         {
-            this.errorMeter = context.Meter(metricName, Unit.Errors);
+            _errorMeter = context.Meter(metricName, Unit.Errors);
         }
 
         public void Initialize(AppFunc next)
         {
-            this.next = next;
+            _next = next;
         }
 
         public async Task Invoke(IDictionary<string, object> environment)
         {
             if (PerformMetric(environment))
             {
-                await next(environment);
+                await _next(environment);
 
                 var httpResponseStatusCode = int.Parse(environment["owin.ResponseStatusCode"].ToString());
 
                 if (httpResponseStatusCode == (int)HttpStatusCode.InternalServerError)
                 {
-                    errorMeter.Mark();
+                    _errorMeter.Mark();
                 }
             }
             else
             {
-                await next(environment);
+                await _next(environment);
             }
         }
     }

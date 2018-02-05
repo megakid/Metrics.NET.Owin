@@ -9,31 +9,31 @@ namespace Metrics.Owin.Middleware
 
     public class HttpStatusCodeMeterMiddleware : MetricMiddleware
     {
-        private readonly Meter httpStatusCodeMeter;
-        private AppFunc next;
+        private readonly Meter _httpStatusCodeMeter;
+        private AppFunc _next;
 
         public HttpStatusCodeMeterMiddleware(MetricsContext context, string metricName, Regex[] ignorePatterns)
             : base(ignorePatterns)
         {
-            this.httpStatusCodeMeter = context.Meter(metricName, Unit.Errors);
+            _httpStatusCodeMeter = context.Meter(metricName, Unit.Errors);
         }
 
         public void Initialize(AppFunc next)
         {
-            this.next = next;
+            _next = next;
         }
 
         public async Task Invoke(IDictionary<string, object> environment)
         {
             if (PerformMetric(environment))
             {
-                await this.next(environment);
+                await _next(environment);
 
-                this.httpStatusCodeMeter.Mark(environment["owin.ResponseStatusCode"].ToString());
+                _httpStatusCodeMeter.Mark(environment["owin.ResponseStatusCode"].ToString());
             }
             else
             {
-                await this.next(environment);
+                await _next(environment);
             }
         }
     }

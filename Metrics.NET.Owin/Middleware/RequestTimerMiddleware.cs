@@ -11,37 +11,37 @@ namespace Metrics.Owin.Middleware
     {
         private const string RequestStartTimeKey = "__Mertics.RequestStartTime__";
 
-        private readonly Timer requestTimer;
-        private AppFunc next;
+        private readonly Timer _requestTimer;
+        private AppFunc _next;
 
         public RequestTimerMiddleware(MetricsContext context, string metricName, Regex[] ignorePatterns)
             : base(ignorePatterns)
         {
-            this.requestTimer = context.Timer(metricName, Unit.Requests);
+            _requestTimer = context.Timer(metricName, Unit.Requests);
         }
 
         public void Initialize(AppFunc next)
         {
-            this.next = next;
+            _next = next;
         }
 
         public async Task Invoke(IDictionary<string, object> environment)
         {
-            if (base.PerformMetric(environment))
+            if (PerformMetric(environment))
             {
-                environment[RequestStartTimeKey] = this.requestTimer.StartRecording();
+                environment[RequestStartTimeKey] = _requestTimer.StartRecording();
 
-                await next(environment);
+                await _next(environment);
 
-                var endTime = this.requestTimer.EndRecording();
+                var endTime = _requestTimer.EndRecording();
                 var startTime = (long)environment[RequestStartTimeKey];
-                this.requestTimer.Record(endTime - startTime, TimeUnit.Nanoseconds);
+                _requestTimer.Record(endTime - startTime, TimeUnit.Nanoseconds);
 
                 environment.Remove(RequestStartTimeKey);
             }
             else
             {
-                await next(environment);
+                await _next(environment);
             }
 
         }

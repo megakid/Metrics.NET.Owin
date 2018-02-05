@@ -10,33 +10,33 @@ namespace Metrics.Owin.Middleware
     /// </summary>
     public class ActiveRequestCounterMiddleware : MetricMiddleware
     {
-        private readonly Counter activeRequests;
-        private Func<IDictionary<string, object>, Task> next;
+        private readonly Counter _activeRequests;
+        private Func<IDictionary<string, object>, Task> _next;
 
         public ActiveRequestCounterMiddleware(MetricsContext context, string metricName, Regex[] ignorePatterns)
             : base(ignorePatterns)
         {
-            this.activeRequests = context.Counter(metricName, Unit.Custom("ActiveRequests"));
+            _activeRequests = context.Counter(metricName, Unit.Custom("ActiveRequests"));
         }
 
         public void Initialize(Func<IDictionary<string, object>, Task> next)
         {
-            this.next = next;
+            _next = next;
         }
 
         public async Task Invoke(IDictionary<string, object> environment)
         {
             if (PerformMetric(environment))
             {
-                this.activeRequests.Increment();
+                _activeRequests.Increment();
 
-                await this.next(environment);
+                await _next(environment);
 
-                this.activeRequests.Decrement();
+                _activeRequests.Decrement();
             }
             else
             {
-                await this.next(environment);
+                await _next(environment);
             }
         }
     }
